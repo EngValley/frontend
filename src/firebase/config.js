@@ -2,14 +2,16 @@ import * as firebase from 'firebase';
 import '@firebase/auth';
 import '@firebase/firestore';
 
+import {API_KEY, MESSAGING_SENDER_ID} from '@env'
+
 const firebaseConfig = {
-  apiKey: 'AIzaSyAOWHBpPhKoNhcGFKHH_Q_0AtL2gV-imgQ',
-  authDomain: 'production-a9404.firebaseapp.com',
-  databaseURL: 'https://production-a9404.firebaseio.com',
-  projectId: 'production-a9404',
-  storageBucket: 'production-a9404.appspot.com',
-  messagingSenderId: '525472070731',
-  appId: '1:525472070731:web:ee873bd62c0deb7eba61ce',
+  apiKey: API_KEY,
+  authDomain: 'engvalley.firebaseapp.com',
+  databaseURL: 'https://engvalley-default-rtdb.europe-west1.firebasedatabase.app/',
+  projectId: 'engvalley',
+  storageBucket: 'engvalley.appspot.com',
+  messagingSenderId: MESSAGING_SENDER_ID,
+  appId: 'test',
 };
 
 if (!firebase.apps.length) {
