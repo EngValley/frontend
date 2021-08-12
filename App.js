@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { firebase } from './src/firebase/config'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import { LoginScreen, HomeScreen, RegistrationScreen, WelcomeScreen } from './src/screens'
+import { CandidateListScreen, LoginScreen, HomeScreen, ProfileScreen, RegistrationScreen, WelcomeScreen, InfoScreen } from './src/screens'
 import {decode, encode} from 'base-64'
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
@@ -46,9 +46,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         { user ? (
-          <Stack.Screen name="Home">
-            {props => <HomeScreen {...props} extraData={user} />}
-          </Stack.Screen>
+          <Stack.Screen name="Profile" component={ProfileScreen}/>
         ) : (
           <>
             <Stack.Screen name="Welcome" component={WelcomeScreen} />
@@ -56,6 +54,8 @@ export default function App() {
             <Stack.Screen name="Registration" component={RegistrationScreen} />
           </>
         )}
+        <Stack.Screen name="CandidateList" component={CandidateListScreen} options={{'title' : 'Candidates'}} />
+        <Stack.Screen name="Info" component={InfoScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,20 +1,16 @@
 import React from 'react'
-import { Pressable, Text, TouchableOpacity, View } from 'react-native'
+import { Button, Pressable, Text, TouchableOpacity, View } from 'react-native'
 import styles from './styles';
 
-export default WelcomeScreen = ({navigation}) => {
-
+const WelcomeScreen = ({navigation}) => {
     return (
         <View style={styles.container}>
             <View style={styles.formContainer}>
-                <Pressable onPress={() => navigation.navigate('HomeScreen')}>
-
-                </Pressable>
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>View Candidates</Text>
-                    <Text style={styles.buttonText}>Sign Up/Sign In</Text>
-                </TouchableOpacity>
+                <Button onPress={() => navigation.navigate('CandidateList')} title="View candidates" />
+                <Button onPress={() => navigation.navigate('Login')} title="Sign In / Sign Up" />
             </View>
         </View>
     )
 }
+
+export default WelcomeScreen
