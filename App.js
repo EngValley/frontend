@@ -3,12 +3,17 @@ import React, { useEffect, useState } from 'react'
 import { firebase } from './src/firebase/config'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import { CandidateListScreen, LoginScreen, HomeScreen, ProfileScreen, RegistrationScreen, WelcomeScreen, InfoScreen } from './src/screens'
+import { CandidateListScreen, EmailLoginScreen, HomeScreen, ProfileScreen, EmailRegistrationScreen, WelcomeScreen, InfoScreen, LoginSelectionScreen } from './src/screens'
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {decode, encode} from 'base-64'
+import * as WebBrowser from 'expo-web-browser';
 if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 
 const Stack = createStackNavigator();
+
+// Completes Google authentication after redirect
+WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
 
@@ -43,20 +48,24 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        { user ? (
-          <Stack.Screen name="Profile" component={ProfileScreen}/>
-        ) : (
-          <>
-            <Stack.Screen name="Welcome" component={WelcomeScreen} />
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Registration" component={RegistrationScreen} />
-          </>
-        )}
-        <Stack.Screen name="CandidateList" component={CandidateListScreen} options={{'title' : 'Candidates'}} />
-        <Stack.Screen name="Info" component={InfoScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          { user ? (
+            <Stack.Screen name="Profile" component={ProfileScreen}/>
+          ) : (
+            <>
+              <Stack.Screen name="Welcome" component={WelcomeScreen} />
+              <Stack.Screen name="LoginSelection" component={LoginSelectionScreen} options={{'title': 'Login'}}/>
+              <Stack.Screen name="EmailLogin" component={EmailLoginScreen} options={{'title': 'Email Login'}}/>
+              <Stack.Screen name="EmailRegistration" component={EmailRegistrationScreen} options={{'title': 'Email Registration'}}/>
+            </>
+          )}
+          <Stack.Screen name="CandidateList" component={CandidateListScreen} options={{'title' : 'Candidates'}} />
+          <Stack.Screen name="Info" component={InfoScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
+    
   );
 }

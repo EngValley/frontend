@@ -1,29 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import { Button, FlatList, Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Linking } from 'react-native'
 import styles from './styles';
 import { firebase } from '../../firebase/config'
+import strings from '../../res/strings'
 
 export default function ProfileScreen({navigation}) {
     const [user, setUser] = useState({})
     const [oldUser, setOldUser] = useState({})
-    const [fieldInfos, setFieldInfos] = useState([])
-
-    const candidateFieldRef = firebase.firestore().collection('candidateFields')
 
     const userRef = firebase.firestore().collection('users')
     const userID = firebase.auth().currentUser.uid
 
-    const renderField = (field) => {
-        return (
-            <View key={field.name} style={styles.fieldContainer}>
-                <Text style={styles.fieldLabel} >{field.displayName}</Text>
-                <TextInput style={styles.fieldTextInput} value={user[field.name] || ''} onChangeText={(text) => {
-                    const newUser = {...user}
-                    newUser[field.name] = text
-                    setUser(newUser)
-                }}/>
-            </View>
-        )
+    const updateTextField = (fieldName) => {
+        return (text) => {
+            const newUser = {...user}
+            newUser[fieldName] = text
+            setUser(newUser)
+        }
     }
 
     const saveChanges = () => {
@@ -49,22 +43,27 @@ export default function ProfileScreen({navigation}) {
                 setOldUser({...retrievedUser})
              } )
             .catch( (error) => alert(error) )
-
-        candidateFieldRef
-            .get()
-            .then( (snapshot) => {console.log(snapshot.docs); setFieldInfos(snapshot.docs.map(doc => doc.data()))} )
-            .catch( (error) => alert(error) )
     }, [])
 
     return (
         <View style={styles.container}>
-            <View style={styles.fieldList}>
-                {fieldInfos.map( (field, i) => renderField(field))}
+            <View style={styles.fieldContainer}>
+                <Text style={styles.fieldLabel}>
+                    Full Name: <TextInput style={styles.fieldTextInput} value={user.fullName} onChangeText={updateTextField('fullName')} />
+                </Text>
+            </View>
+            <View>
+                <Text style={styles.fieldLabel}>Title: <TextInput style={styles.fieldTextInput} value={user.title} onChangeText={updateTextField('title')} />
+                </Text>
+            </View>
+            <View>
+                <Text>Know someone that might be a good fit? Consider <Text onPress={() => Linking.openURL(encodeURI('mailto:?subject=' + strings.inviteSubject + '&body=' + strings.inviteBody))}>inviting them</Text></Text>
             </View>
             <View style={styles.profileButtonContainer}>
                 <Button style={styles.profileButton} title="Save" onPress={saveChanges}/>
                 <Button style={styles.profileButton} title="Discard" onPress={discardChanges}/>
                 <Button style={styles.profileButton} title="Candidates" onPress={() => navigation.navigate("CandidateList")} />
+                <Button style={styles.profileButton} title="Log Out" onPress={() => {firebase.auth().signOut(); navigation.navigate('Welcome')}} />
             </View>
         </View>
     )

@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Button, FlatList, Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import styles from './styles';
 import { firebase } from '../../firebase/config'
-import { ContactButton } from '../../components';
+import { CandidateCard, ContactButton } from '../../components';
 
 export default function CandidateListScreen({props, navigation}) {
     const [users, setUsers] = useState([])
+    const [idNameMap, setIdNameMap] = useState({})
 
     const userRef = firebase.firestore().collection('users')
 
@@ -15,18 +16,24 @@ export default function CandidateListScreen({props, navigation}) {
             .then(
                 snapshot => {
                     const newUsers = []
+                    const newIdNameMap = {}
                     snapshot.forEach(doc => {
                         const userData = doc.data()
 
                         const user = {
                             'fullName' : userData.fullName,
                             'title' : userData.title,
-                            'id' : userData.id,
-                            'email' : userData.email
+                            'id' : doc.id,
+                            'email' : userData.email,
+                            'approved' : userData.approved,
+                            'endorsers' : userData.endorsers
                         }
                         newUsers.push(user)
+                        newIdNameMap[doc.id] = userData.fullName
                     });
+
                     setUsers(newUsers)
+                    setIdNameMap(newIdNameMap)
                     console.log('Found users: ', newUsers)
                 },
                 error => {
@@ -51,12 +58,16 @@ export default function CandidateListScreen({props, navigation}) {
         <View style={styles.container}>
             { users && (
                 <View style={styles.listContainer}>
-                    <FlatList
-                        data={users}
-                        renderItem={renderUser}
-                        keyExtractor={(item) => item.id}
-                        removeClippedSubviews={true}
-                    />
+                    {users.map( (user, index) => <CandidateCard
+                        fullName={user.fullName}
+                        title={user.title}
+                        email={user.email}
+                        endorsers={user.endorsers}
+                        idNameMap={idNameMap}
+                        id={user.id}
+                        approved={user.approved} 
+                        key={user.id}
+                        navigation={navigation}/>)}
                 </View>
             )}
         </View>

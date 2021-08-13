@@ -1,0 +1,1 @@
+- Firebase Google auth with Expo Go requires additional configuration, see [here](https://docs.expo.dev/guides/authentication/#google) (Firebase tab)

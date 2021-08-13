@@ -7,7 +7,7 @@ const WelcomeScreen = ({navigation}) => {
         <View style={styles.container}>
             <View style={styles.formContainer}>
                 <Button onPress={() => navigation.navigate('CandidateList')} title="View candidates" />
-                <Button onPress={() => navigation.navigate('Login')} title="Sign In / Sign Up" />
+                <Button onPress={() => navigation.navigate('LoginSelection')} title="Sign In / Sign Up" />
             </View>
         </View>
     )
