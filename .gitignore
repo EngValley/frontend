@@ -184,3 +184,7 @@ buck-out/
 # Expo
 .expo/*
 web-build/
+
+
+# Firebase deployment
+firebase/public

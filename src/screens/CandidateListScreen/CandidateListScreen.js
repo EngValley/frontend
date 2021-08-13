@@ -3,6 +3,7 @@ import { Button, FlatList, Keyboard, Text, TextInput, TouchableOpacity, View } f
 import styles from './styles';
 import { firebase } from '../../firebase/config'
 import { CandidateCard, ContactButton } from '../../components';
+import SearchBar from 'react-native-elements/dist/searchbar/SearchBar-ios';
 
 export default function CandidateListScreen({props, navigation}) {
     const [users, setUsers] = useState([])
@@ -56,6 +57,7 @@ export default function CandidateListScreen({props, navigation}) {
 
     return (
         <View style={styles.container}>
+            <SearchBar />
             { users && (
                 <View style={styles.listContainer}>
                     {users.map( (user, index) => <CandidateCard

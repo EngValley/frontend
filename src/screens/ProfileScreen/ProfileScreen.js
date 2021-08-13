@@ -10,7 +10,7 @@ export default function ProfileScreen({navigation}) {
     const [oldUser, setOldUser] = useState({})
 
     const userRef = firebase.firestore().collection('users')
-    const userID = firebase.auth().currentUser.uid
+    const userId = firebase.auth().currentUser.uid
 
     const updateTextField = (fieldName) => {
         return (text) => {
@@ -22,7 +22,7 @@ export default function ProfileScreen({navigation}) {
 
     const saveChanges = () => {
         userRef
-            .doc(user.id)
+            .doc(userId)
             .set(user)
             .then(() => alert('Updated!'))
             .catch((error) => alert(error))
@@ -35,9 +35,12 @@ export default function ProfileScreen({navigation}) {
 
     useEffect(() => {
         userRef
-            .doc(userID)
+            .doc(userId)
             .get()
             .then( (doc) => {
+                if (!doc.exists) {
+                    alert('User not found in secondary DB.')
+                }
                 const retrievedUser = doc.data()
                 setUser(retrievedUser)
                 setOldUser({...retrievedUser})
@@ -57,13 +60,16 @@ export default function ProfileScreen({navigation}) {
                 </Text>
             </View>
             <View>
-                <Text>Know someone that might be a good fit? Consider <Text onPress={() => Linking.openURL(encodeURI('mailto:?subject=' + strings.inviteSubject + '&body=' + strings.inviteBody))}>inviting them</Text></Text>
+                <Text>Know someone that might be a good fit? Consider <Text style={styles.inviteLink} onPress={() => Linking.openURL(encodeURI('mailto:?subject=' + strings.inviteSubject + '&body=' + strings.inviteBody))}>inviting them</Text></Text>
             </View>
             <View style={styles.profileButtonContainer}>
                 <Button style={styles.profileButton} title="Save" onPress={saveChanges}/>
                 <Button style={styles.profileButton} title="Discard" onPress={discardChanges}/>
                 <Button style={styles.profileButton} title="Candidates" onPress={() => navigation.navigate("CandidateList")} />
-                <Button style={styles.profileButton} title="Log Out" onPress={() => {firebase.auth().signOut(); navigation.navigate('Welcome')}} />
+                <Button style={styles.profileButton} title="Log Out" onPress={() => {
+                    firebase.auth().signOut().then( () => navigation.navigate('Welcome'))
+                }
+                    } />
             </View>
         </View>
     )

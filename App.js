@@ -16,51 +16,23 @@ const Stack = createStackNavigator();
 WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
-
-  const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState(null)
+  const [loggedIn, setLoggedIn] = useState(false)
 
   useEffect(() => {
-    const usersRef = firebase.firestore().collection('users');
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        usersRef
-          .doc(user.uid)
-          .get()
-          .then((document) => {
-            const userData = document.data()
-            setLoading(false)
-            setUser(userData)
-          })
-          .catch((error) => {
-            setLoading(false)
-          });
-      } else {
-        setLoading(false)
-      }
-    });
-  }, []);
-
-  if (loading) {
-    return (
-      <></>
-    )
-  }
+      setLoggedIn(firebase.auth().currentUser)
+  })
 
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <Stack.Navigator>
-          { user ? (
-            <Stack.Screen name="Profile" component={ProfileScreen}/>
-          ) : (
-            <>
-              <Stack.Screen name="Welcome" component={WelcomeScreen} />
-              <Stack.Screen name="LoginSelection" component={LoginSelectionScreen} options={{'title': 'Login'}}/>
-              <Stack.Screen name="EmailLogin" component={EmailLoginScreen} options={{'title': 'Email Login'}}/>
-              <Stack.Screen name="EmailRegistration" component={EmailRegistrationScreen} options={{'title': 'Email Registration'}}/>
-            </>
-          )}
+        <Stack.Navigator initialRouteName='Welcome'>
+          
+          <Stack.Screen name="Profile" component={ProfileScreen}/>
+          <Stack.Screen name="Welcome" component={WelcomeScreen} />
+          <Stack.Screen name="LoginSelection" component={LoginSelectionScreen} options={{'title': 'Login'}} setLoggedIn={setLoggedIn}/>
+          <Stack.Screen name="EmailLogin" component={EmailLoginScreen} options={{'title': 'Email Login'}}/>
+          <Stack.Screen name="EmailRegistration" component={EmailRegistrationScreen} options={{'title': 'Email Registration'}}/>
+            
           <Stack.Screen name="CandidateList" component={CandidateListScreen} options={{'title' : 'Candidates'}} />
           <Stack.Screen name="Info" component={InfoScreen} />
         </Stack.Navigator>
