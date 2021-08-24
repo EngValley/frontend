@@ -20,6 +20,14 @@ export default function ProfileScreen({navigation}) {
         }
     }
 
+    const updateAnswer = (index) => {
+        return (text) => {
+            const newUser = {...user}
+            newUser.qaPairs[index].answer = text
+            setUser(newUser)
+        }
+    }
+
     const saveChanges = () => {
         userRef
             .doc(userId)
@@ -52,16 +60,30 @@ export default function ProfileScreen({navigation}) {
         <View style={styles.container}>
             <View style={styles.fieldContainer}>
                 <Text style={styles.fieldLabel}>
-                    Full Name: <TextInput style={styles.fieldTextInput} value={user.fullName} onChangeText={updateTextField('fullName')} />
+                    Full Name: <TextInput style={styles.fieldTextInput} value={user.fullName || ''} onChangeText={updateTextField('fullName')} />
                 </Text>
             </View>
             <View>
-                <Text style={styles.fieldLabel}>Title: <TextInput style={styles.fieldTextInput} value={user.title} onChangeText={updateTextField('title')} />
+                <Text style={styles.fieldLabel}>Title: <TextInput style={styles.fieldTextInput} value={user.title || ''} onChangeText={updateTextField('title')} />
                 </Text>
             </View>
+            <Button title="Skills" onPress={() => navigation.navigate("SelfAssessment")} />
             <View>
                 <Text>Know someone that might be a good fit? Consider <Text style={styles.inviteLink} onPress={() => Linking.openURL(encodeURI('mailto:?subject=' + strings.inviteSubject + '&body=' + strings.inviteBody))}>inviting them</Text></Text>
             </View>
+            {
+                user?.qaPairs?.length > 0 ? (
+                    <View>
+                        {user.qaPairs.map(((qaPair, qaIndex) => (
+                            <View key={qaIndex}>
+                                <Text>{qaPair.question}</Text>
+                                <TextInput style={styles.answerTextInput} value={qaPair.answer} onChangeText={updateAnswer(qaIndex)} multiline={true} numberOfLines={100} />
+                            </View>
+                        )))}
+                    </View>
+                ) : <></>
+            }
+
             <View style={styles.profileButtonContainer}>
                 <Button style={styles.profileButton} title="Save" onPress={saveChanges}/>
                 <Button style={styles.profileButton} title="Discard" onPress={discardChanges}/>
