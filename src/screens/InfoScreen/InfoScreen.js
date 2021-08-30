@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { FlatList, Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import styles from './styles';
 import { firebase } from '../../firebase/config'
-import { ContactButton, EndorseButton, QACard } from '../../components';
+import { ContactButton, EndorseButton, QACard, WatchButton } from '../../components';
 import { Button } from 'react-native';
 
 export default function InfoScreen({route}) {
@@ -43,7 +43,7 @@ export default function InfoScreen({route}) {
         userRef
             .doc(userId)
             .get()
-            .then( (doc) => setUser(doc.data()) )
+            .then( (doc) => setUser({...doc.data(), 'id' : doc.id}) )
             .catch( (error) => alert(error) )
         userRef
             .get()
@@ -82,6 +82,7 @@ export default function InfoScreen({route}) {
                     <Button title={'Submit'} disabled={questionText.length == 0} onPress={submitQuestion} />
                 </View>
             ) : <Button title={'Ask a question'} onPress={() => setShowQAInterface(true)} />}
+            <WatchButton target={user.id} />
             <EndorseButton target={userId} endorsers={user.endorsers} setEndorsers={setEndorsers}/>
             <ContactButton email={user.email} />
         </View>

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { Button, FlatList, Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { View } from 'react-native'
 import styles from './styles';
 import { firebase } from '../../firebase/config'
-import { CandidateCard, ContactButton } from '../../components';
+import { CandidateCard } from '../../components';
 import SearchBar from 'react-native-elements/dist/searchbar/SearchBar-ios';
 
 export default function CandidateListScreen({props, navigation}) {
+    const userId = firebase.auth().currentUser?.uid
+
     const [users, setUsers] = useState([])
+    const [recommendations, setRecommendations] = useState([])
     const [idNameMap, setIdNameMap] = useState({})
 
     const userRef = firebase.firestore().collection('users')
@@ -31,6 +34,11 @@ export default function CandidateListScreen({props, navigation}) {
                         }
                         newUsers.push(user)
                         newIdNameMap[doc.id] = userData.fullName
+
+                        if (doc.id == userId) {
+                            console.log('Setting recommendations')
+                            setRecommendations(userData.recommendations)
+                        }
                     });
 
                     setUsers(newUsers)
@@ -43,16 +51,10 @@ export default function CandidateListScreen({props, navigation}) {
             )
     }, [])
 
-    const renderUser = ({item, index}) => {
-        return (
-            <View style={styles.userContainer} key={item.fullName}>
-                <Text style={styles.userText}>
-                    {item.fullName}, {item.title}
-                </Text>
-                <Button title="View info" onPress={() => navigation.navigate("Info", { 'userId' : item.id })} />
-                <ContactButton email={item.email}/>
-            </View>
-        )
+    const getSortedUsers = () => {
+        const sortedUsers = [...users];
+        sortedUsers.sort((u1, u2) => recommendations.includes(u2.id) - recommendations.includes(u1.id));
+        return sortedUsers;
     }
 
     return (
@@ -60,7 +62,7 @@ export default function CandidateListScreen({props, navigation}) {
             <SearchBar />
             { users && (
                 <View style={styles.listContainer}>
-                    {users.map( (user, index) => <CandidateCard
+                    {getSortedUsers().map( (user, index) => <CandidateCard
                         fullName={user.fullName}
                         title={user.title}
                         email={user.email}
@@ -69,7 +71,9 @@ export default function CandidateListScreen({props, navigation}) {
                         id={user.id}
                         approved={user.approved} 
                         key={user.id}
-                        navigation={navigation}/>)}
+                        navigation={navigation}
+                        recommended={recommendations.includes(user.id)}
+                        />)}
                 </View>
             )}
         </View>
