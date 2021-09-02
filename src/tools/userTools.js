@@ -2,6 +2,7 @@ function addUser(uid, user, usersRef) {
     return new Promise( (resolve, reject) => {
         const fullUser = {...user}
         fullUser.qaPairs = []
+        fullUser.skills = {}
         usersRef
             .doc(uid)
             .set(user)

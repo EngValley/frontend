@@ -8,9 +8,11 @@ import strings from '../../res/strings'
 export default function ProfileScreen({navigation}) {
     const [user, setUser] = useState({})
     const [oldUser, setOldUser] = useState({})
+    const [availableSkills, setAvailableSkills] = useState({})
 
     const userRef = firebase.firestore().collection('users')
     const userId = firebase.auth().currentUser.uid
+    const skillRef = firebase.firestore().collection('skills')
 
     const updateTextField = (fieldName) => {
         return (text) => {
@@ -54,7 +56,27 @@ export default function ProfileScreen({navigation}) {
                 setOldUser({...retrievedUser})
              } )
             .catch( (error) => alert(error) )
+
+        skillRef
+             .get()
+             .then((snapshot) => {
+                const newSkills = {};
+                snapshot.forEach((doc) => {
+                    const docData = doc.data();
+                    newSkills[doc.id] = {
+                        name: docData.name
+                    }
+                })
+
+                setAvailableSkills(newSkills);
+             })
     }, [])
+
+    const getSkills = (level) => {
+        if (!user.skills || !availableSkills) return []
+
+        return Object.entries(user.skills).filter(([_, skill]) => skill.level == level).map(([skillId, _]) => availableSkills[skillId]?.name)
+    }
 
     return (
         <View style={styles.container}>
@@ -67,7 +89,11 @@ export default function ProfileScreen({navigation}) {
                 <Text style={styles.fieldLabel}>Title: <TextInput style={styles.fieldTextInput} value={user.title || ''} onChangeText={updateTextField('title')} />
                 </Text>
             </View>
-            <Button title="Skills" onPress={() => navigation.navigate("SelfAssessment")} />
+            <View>
+                <Text>Expert skills: {getSkills('expert').join('\n')}</Text>
+                <Text>Regular skills: {getSkills('regular').join('\n')}</Text>
+                <Button title="Edit Skills" onPress={() => navigation.navigate("SelfAssessment")} />
+            </View>
             <View>
                 <Text>Know someone that might be a good fit? Consider <Text style={styles.inviteLink} onPress={() => Linking.openURL(encodeURI('mailto:?subject=' + strings.inviteSubject + '&body=' + strings.inviteBody))}>inviting them</Text></Text>
             </View>
