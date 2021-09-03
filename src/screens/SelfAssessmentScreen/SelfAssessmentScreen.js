@@ -6,11 +6,16 @@ import { firebase } from '../../firebase/config'
 import { SkillDisplay } from '../../components'
 import SkillSelector from '../../components/SkillSelector'
 
-export default function SelfAssessmentScreen(props) {
+export default function SelfAssessmentScreen({user, setUser}) {
     const [selectedSkillCollection, setSelectedSkillCollection] = useState()
     const [availableSkillCollections, setAvailableSkillCollections] = useState([])
     const [availableSkills, setAvailableSkills] = useState([])
-    const [userSkills, setUserSkills] = useState({})
+    const userSkills = user.skills;
+    const setUserSkills = (newSkills) => {
+        const newUser = {...user};
+        newUser.skills = newSkills;
+        setUser(newUser);
+    }
     const [oldUserSkills, setOldUserSkills] = useState({})
     const userRef = firebase.firestore().collection('users')
     const skillCollectionRef = firebase.firestore().collection('skillCollections')
@@ -144,7 +149,7 @@ export default function SelfAssessmentScreen(props) {
             </View>
             <Divider orientation="horizontal" subHeader="Chosen Skills"/>
             <View>
-                {Object.entries(userSkills).map(([id, skill]) => <SkillDisplay name={availableSkills[id].name} level={userSkills[id].level} onLevelChanged={(newLevel) => updateSkill(id, newLevel)} key={id}/>)}
+                {Object.entries(userSkills).map(([id, skill]) => <SkillDisplay name={availableSkills[id]?.name} level={userSkills[id].level} onLevelChanged={(newLevel) => updateSkill(id, newLevel)} key={id}/>)}
             </View>
             <Button title="Save" onPress={saveSkills} />
             <Button title="Discard" onPress={discardSkills} />

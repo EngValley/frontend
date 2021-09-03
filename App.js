@@ -17,6 +17,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false)
+  const [user, setUser] = useState({})
 
   useEffect(() => {
       setLoggedIn(firebase.auth().currentUser)
@@ -27,7 +28,9 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator initialRouteName='Welcome'>
           
-          <Stack.Screen name="Profile" component={ProfileScreen}/>
+          <Stack.Screen name="Profile" >
+            {(props) => <ProfileScreen {...props} user={user} setUser={setUser} />}
+          </Stack.Screen>
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="LoginSelection" component={LoginSelectionScreen} options={{'title': 'Login'}} setLoggedIn={setLoggedIn}/>
           <Stack.Screen name="EmailLogin" component={EmailLoginScreen} options={{'title': 'Email Login'}}/>
@@ -35,7 +38,9 @@ export default function App() {
             
           <Stack.Screen name="CandidateList" component={CandidateListScreen} options={{'title' : 'Candidates'}} />
           <Stack.Screen name="Info" component={InfoScreen} />
-          <Stack.Screen name="SelfAssessment" component={SelfAssessmentScreen} options={{'title' : 'Skills'}}/>
+          <Stack.Screen name="SelfAssessment" options={{'title' : 'Skills'}}>
+            {(props) => <SelfAssessmentScreen {...props} user={user} setUser={setUser} />}
+          </Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

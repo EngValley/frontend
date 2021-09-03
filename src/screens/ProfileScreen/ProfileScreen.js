@@ -5,8 +5,7 @@ import styles from './styles';
 import { firebase } from '../../firebase/config'
 import strings from '../../res/strings'
 
-export default function ProfileScreen({navigation}) {
-    const [user, setUser] = useState({})
+export default function ProfileScreen({user, setUser, navigation}) {
     const [oldUser, setOldUser] = useState({})
     const [availableSkills, setAvailableSkills] = useState({})
 
@@ -78,26 +77,6 @@ export default function ProfileScreen({navigation}) {
         return Object.entries(user.skills).filter(([_, skill]) => skill.level == level).map(([skillId, _]) => availableSkills[skillId]?.name)
     }
 
-    const skillCollectionRef = firebase.firestore().collection('skillCollections')
-
-    const [collection, setCollection] = useState('')
-    const [skill, setSkill] = useState('')
-    const [name, setName] = useState('')
-    const [weight, setWeight] = useState('')
-
-    const send = () => {
-        skillRef
-            .doc(skill)
-            .set({
-                name: name
-            })
-        const dict = { }
-        dict['skills.' + skill] = {weight: parseFloat(weight)}
-        skillCollectionRef
-            .doc(collection)
-            .update(dict)
-    }
-
     return (
         <View style={styles.container}>
             <View style={styles.fieldContainer}>
@@ -110,24 +89,12 @@ export default function ProfileScreen({navigation}) {
                 </Text>
             </View>
             <View>
-                <Text>Expert skills: {getSkills('expert').join('\n')}</Text>
-                <Text>Regular skills: {getSkills('regular').join('\n')}</Text>
+                <Text>Expert skills: {'\n' + getSkills('expert').join('\n')}</Text>
+                <Text>Regular skills: {'\n' + getSkills('regular').join('\n')}</Text>
                 <Button title="Edit Skills" onPress={() => navigation.navigate("SelfAssessment")} />
             </View>
             <View>
                 <Text>Know someone that might be a good fit? Consider <Text style={styles.inviteLink} onPress={() => Linking.openURL(encodeURI('mailto:?subject=' + strings.inviteSubject + '&body=' + strings.inviteBody))}>inviting them</Text></Text>
-            </View>
-            <View>
-                <Text>Add input</Text>
-                <Text>Collection</Text>
-                <TextInput value={collection} onChangeText={setCollection} />
-                <Text>Skill</Text>
-                <TextInput value={skill} onChangeText={setSkill} />
-                <Text>Name</Text>
-                <TextInput value={name} onChangeText={setName} />
-                <Text>Weight</Text>
-                <TextInput value={weight} onChangeText={setWeight} />
-                <Button onPress={send} title='Send'/>
             </View>
             {
                 user?.qaPairs?.length > 0 ? (
