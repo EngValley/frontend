@@ -144,7 +144,7 @@ export default function SelfAssessmentScreen(props) {
             </View>
             <Divider orientation="horizontal" subHeader="Chosen Skills"/>
             <View>
-                {Object.entries(userSkills).map(([id, skill]) => <SkillDisplay name={availableSkills[id].name} level={userSkills[skill.id]?.level} onLevelChanged={(newLevel) => updateSkill(id, newLevel)} />)}
+                {Object.entries(userSkills).map(([id, skill]) => <SkillDisplay name={availableSkills[id].name} level={userSkills[id].level} onLevelChanged={(newLevel) => updateSkill(id, newLevel)} key={id}/>)}
             </View>
             <Button title="Save" onPress={saveSkills} />
             <Button title="Discard" onPress={discardSkills} />
