@@ -128,12 +128,15 @@ export default function SelfAssessmentScreen({user, setUser}) {
             .update({
                 skills: skillsToBeSaved
             })
-            .then(() => setOldUserSkills(userSkills))
+            .then(() => {
+                setOldUserSkills(userSkills)
+                navigation.navigate('Profile')
+            })
     }
 
     const discardSkills = () => {
         setUserSkills(oldUserSkills)
-        props.navigation.navigate('Profile')
+        navigation.navigate('Profile')
     }
 
     return (
